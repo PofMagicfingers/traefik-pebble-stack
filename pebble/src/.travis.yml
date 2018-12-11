@@ -1,0 +1,27 @@
+language: go
+
+sudo: true
+addons:
+  hosts:
+    - example.letsencrypt.org
+    - elpmaxe.letsencrypt.org
+
+go:
+  - "1.10"
+
+before_install:
+  - git clone https://github.com/certbot/certbot
+  - cd certbot
+  - ./certbot-auto --os-packages-only -n
+  - ./tools/venv.sh
+  - . venv/bin/activate
+  - cd -
+
+before_script:
+  - pebble &
+  # Wait for pebble to come up
+  - until </dev/tcp/localhost/14000 ; do sleep 0.1 ; done
+
+script:
+  - go vet ./...
+  - REQUESTS_CA_BUNDLE=./test/certs/pebble.minica.pem python ./test/chisel2.py example.letsencrypt.org elpmaxe.letsencrypt.org
