@@ -3,7 +3,11 @@ FROM golang:1.11.1-alpine3.8
 RUN apk add --update openssl git && \
     rm -rf /var/cache/apk/*
 
-RUN go get -u github.com/zimosworld/pebble/...
+ADD src /go/src/github.com/zimosworld/pebble
+
+RUN go get -u gopkg.in/square/go-jose.v2 github.com/jmhodges/clock
+
+# RUN go get -u github.com/zimosworld/pebble/...
 RUN cd $GOPATH/src/github.com/zimosworld/pebble && \
         go install ./...
 
