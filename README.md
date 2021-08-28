@@ -14,7 +14,7 @@ mkdir -p $HOME/.docker/traefik
 git clone https://github.com/PofMagicfingers/traefik-pebble-stack.git $HOME/.docker/traefik
 cd $HOME/.docker/traefik
 
-docker network create --subnet=172.10.0.0/16 traefik
+docker network create --subnet=172.16.0.0/16 traefik
 docker-compose up -d
 ```
 
