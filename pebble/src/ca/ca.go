@@ -9,11 +9,11 @@ import (
 	"encoding/hex"
 	"encoding/pem"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"math"
 	"math/big"
 	"time"
-	"io/ioutil"
 
 	"github.com/zimosworld/pebble/acme"
 	"github.com/zimosworld/pebble/core"
@@ -60,22 +60,22 @@ func makeKey() (*rsa.PrivateKey, error) {
 
 func (ca *CAImpl) getKey(keyFile string) (*rsa.PrivateKey, error) {
 
-    kf, e := ioutil.ReadFile(keyFile)
-    if e != nil {
-        ca.log.Printf("kfload:", e.Error())
-        return nil, e
-    }
+	kf, e := ioutil.ReadFile(keyFile)
+	if e != nil {
+		ca.log.Printf("kfload:", e.Error())
+		return nil, e
+	}
 
-    kpb, kr := pem.Decode(kf)
-    fmt.Println(string(kr))
+	kpb, kr := pem.Decode(kf)
+	fmt.Println(string(kr))
 
-    key, e := x509.ParsePKCS1PrivateKey(kpb.Bytes)
-    if e != nil {
-        ca.log.Printf("parsekey:", e.Error())
-        return nil, e
-    }
+	key, e := x509.ParsePKCS1PrivateKey(kpb.Bytes)
+	if e != nil {
+		ca.log.Printf("parsekey:", e.Error())
+		return nil, e
+	}
 
-    return key, nil
+	return key, nil
 }
 
 func (ca *CAImpl) makeRootCert(
@@ -90,12 +90,12 @@ func (ca *CAImpl) makeRootCert(
 		},
 		SerialNumber: serial,
 		NotBefore:    time.Now(),
-		NotAfter:     time.Now().AddDate(30, 0, 0),
+		NotAfter:     time.Now().AddDate(0, 11, 0),
 
 		KeyUsage:              x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
 		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth, x509.ExtKeyUsageClientAuth},
 		BasicConstraintsValid: true,
-		IsCA: true,
+		IsCA:                  true,
 	}
 
 	var signerKey crypto.Signer
@@ -132,67 +132,67 @@ func (ca *CAImpl) makeRootCert(
 }
 
 func (ca *CAImpl) getRootCert(certFile string) (*core.Certificate, error) {
-    cf, e := ioutil.ReadFile(certFile)
-    if e != nil {
-        ca.log.Printf("cfload:", e.Error())
-        return nil, e
-    }
+	cf, e := ioutil.ReadFile(certFile)
+	if e != nil {
+		ca.log.Printf("cfload:", e.Error())
+		return nil, e
+	}
 
-    cpb, cr := pem.Decode(cf)
-    fmt.Println(string(cr))
+	cpb, cr := pem.Decode(cf)
+	fmt.Println(string(cr))
 
-    crt, e := x509.ParseCertificate(cpb.Bytes)
-    if e != nil {
-        ca.log.Printf("parsex509:", e.Error())
-        return nil, e
-    }
+	crt, e := x509.ParseCertificate(cpb.Bytes)
+	if e != nil {
+		ca.log.Printf("parsex509:", e.Error())
+		return nil, e
+	}
 
-    hexSerial := hex.EncodeToString(crt.SerialNumber.Bytes())
-    cert := &core.Certificate{
-        ID:   hexSerial,
-        Cert: crt,
-        DER:  cf,
-    }
-
-    return cert, nil
-}
-
-func (ca *CAImpl) LoadX509KeyPair(certFile, keyFile string) (*core.Certificate, *rsa.PrivateKey, error) {
-    cf, e := ioutil.ReadFile(certFile)
-    if e != nil {
-        ca.log.Printf("cfload:", e.Error())
-        return nil, nil, e
-    }
-
-    kf, e := ioutil.ReadFile(keyFile)
-    if e != nil {
-        ca.log.Printf("kfload:", e.Error())
-        return nil, nil, e
-    }
-    cpb, cr := pem.Decode(cf)
-    fmt.Println(string(cr))
-    kpb, kr := pem.Decode(kf)
-    fmt.Println(string(kr))
-
-    crt, e := x509.ParseCertificate(cpb.Bytes)
-    if e != nil {
-        ca.log.Printf("parsex509:", e.Error())
-        return nil, nil, e
-    }
-
-    hexSerial := hex.EncodeToString(crt.SerialNumber.Bytes())
+	hexSerial := hex.EncodeToString(crt.SerialNumber.Bytes())
 	cert := &core.Certificate{
 		ID:   hexSerial,
 		Cert: crt,
 		DER:  cf,
 	}
 
-    key, e := x509.ParsePKCS1PrivateKey(kpb.Bytes)
-    if e != nil {
-        ca.log.Printf("parsekey:", e.Error())
-        return nil, nil, e
-    }
-    return cert, key, nil
+	return cert, nil
+}
+
+func (ca *CAImpl) LoadX509KeyPair(certFile, keyFile string) (*core.Certificate, *rsa.PrivateKey, error) {
+	cf, e := ioutil.ReadFile(certFile)
+	if e != nil {
+		ca.log.Printf("cfload:", e.Error())
+		return nil, nil, e
+	}
+
+	kf, e := ioutil.ReadFile(keyFile)
+	if e != nil {
+		ca.log.Printf("kfload:", e.Error())
+		return nil, nil, e
+	}
+	cpb, cr := pem.Decode(cf)
+	fmt.Println(string(cr))
+	kpb, kr := pem.Decode(kf)
+	fmt.Println(string(kr))
+
+	crt, e := x509.ParseCertificate(cpb.Bytes)
+	if e != nil {
+		ca.log.Printf("parsex509:", e.Error())
+		return nil, nil, e
+	}
+
+	hexSerial := hex.EncodeToString(crt.SerialNumber.Bytes())
+	cert := &core.Certificate{
+		ID:   hexSerial,
+		Cert: crt,
+		DER:  cf,
+	}
+
+	key, e := x509.ParsePKCS1PrivateKey(kpb.Bytes)
+	if e != nil {
+		ca.log.Printf("parsekey:", e.Error())
+		return nil, nil, e
+	}
+	return cert, key, nil
 }
 
 func (ca *CAImpl) getIssuer() error {
@@ -237,12 +237,12 @@ func (ca *CAImpl) newCertificate(domains []string, key crypto.PublicKey) (*core.
 		},
 		SerialNumber: serial,
 		NotBefore:    time.Now(),
-		NotAfter:     time.Now().AddDate(5, 0, 0),
+		NotAfter:     time.Now().AddDate(0, 11, 0),
 
 		KeyUsage:              x509.KeyUsageDigitalSignature | x509.KeyUsageKeyEncipherment,
 		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth, x509.ExtKeyUsageClientAuth},
 		BasicConstraintsValid: true,
-		IsCA: false,
+		IsCA:                  false,
 	}
 	der, err := x509.CreateCertificate(rand.Reader, template, issuer.cert.Cert, key, issuer.key)
 	if err != nil {

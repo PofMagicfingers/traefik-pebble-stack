@@ -4,7 +4,7 @@ cd /var/pebble/certs/
 
 if [ ! -f "ca/cert.pem" ]; then
     openssl genrsa -out ca/key.pem 4096
-    openssl req -x509 -subj "/C=US/ST=CA/O=MyOrg, Inc./CN=pebble CA" -new -nodes -key ca/key.pem -sha256 -days 36500 -out ca/cert.pem
+    openssl req -x509 -subj "/C=US/ST=CA/O=MyOrg, Inc./CN=pebble CA" -new -nodes -key ca/key.pem -sha256 -days 365 -out ca/cert.pem
 fi
 
 if [ ! -f "localhost/cert.pem" ]; then
@@ -13,7 +13,7 @@ if [ ! -f "localhost/cert.pem" ]; then
         -subj "/C=US/ST=CA/O=MyOrg, Inc./CN=pebble" -out localhost/request.csr
     openssl x509 -req -in localhost/request.csr \
         -CA ca/cert.pem -CAkey ca/key.pem \
-        -CAcreateserial -out localhost/cert.pem -days 3650 -sha256
+        -CAcreateserial -out localhost/cert.pem -days 365 -sha256
 fi
 
 cd -
