@@ -33,6 +33,13 @@ On most linux systems, you can add a trusted CA with this command :
 cd $HOME/.docker/traefik
 certutil -d sql:$HOME/.pki/nssdb -A -t "CT,C,C" -n "Traefik Pebble" -i ca/cert.pem
 ```
+
+## Mac
+
+```shell
+sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ./ca/cert.pem  
+```
+
 # Troubleshooting
 
 If Traefik not work, try to use `172.10.0.0` subnet (instead of `172.16.0.0`) 
