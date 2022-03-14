@@ -1,4 +1,4 @@
-FROM golang:1.11.13-alpine3.10
+FROM golang:1.15.15-alpine3.14
 
 RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 
