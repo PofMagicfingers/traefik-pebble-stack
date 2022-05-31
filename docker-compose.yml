@@ -13,14 +13,16 @@ services:
       - "./ca:/usr/local/share/ca-certificates:ro"
     restart: always
     ports:
+      - 8080:8080
       - 80:80
       - 443:443
     labels:
-      - traefik.port=8080
-      - traefik.frontend.rule=Host:traefik.test
+      traefik.port: 8080
+      traefik.frontend.rule: Host:traefik.test
+      traefik.frontend.priority: 1000
     depends_on:
       - pebble
-    
+
   pebble:
     build: pebble
     image: pebble
@@ -32,7 +34,7 @@ services:
           ipv4_address: 172.16.0.5
     restart: always
     labels:
-      - traefik.enable=false
+      traefik.enable: false
 
 networks:
   traefik:
