@@ -1,5 +1,7 @@
 # Traefik-Pebble stack
 
+*WARNING: This project is outdated*
+
 This project run 2 docker containers, traefik and pebble. 
 Pebble is a really light implementation of Let's Encrypt ACME protocol.
 We're using zimosworld fork's which allow to keep the same CA between launches.
