@@ -25,7 +25,7 @@ servers are set up to always restart, CA will generate only once, all other cert
 # DNSmasq config
 ```
 local=/test/
-address=/test/172.10.0.10 
+address=/test/172.16.0.10 
 ```
 
 # Trusted CA
