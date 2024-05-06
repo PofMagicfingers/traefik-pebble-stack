@@ -1,10 +1,9 @@
 {
   "pebble": {
     "listenAddress": "0.0.0.0:443",
-    "certificate": "/var/pebble/certs/localhost/cert.pem",
-    "privateKey": "/var/pebble/certs/localhost/key.pem",
+    "certificate": "/var/pebble/certs/server/server.crt",
+    "privateKey": "/var/pebble/certs/server/server.key",
     "httpPort": 80,
     "tlsPort": 443
   }
 }
-

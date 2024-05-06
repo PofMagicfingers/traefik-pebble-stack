@@ -1,0 +1,27 @@
+log:
+  level: DEBUG
+api:
+  insecure: true
+accessLog:
+  format: json
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+    http:
+      tls:
+        certResolver: letsencrypt
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      caServer: https://pebble/dir
+      email: "dev@local.test"
+      httpChallenge:
+        entryPoint: web
+
+providers:
+  docker:
+    network: traefik
+    exposedByDefault: false

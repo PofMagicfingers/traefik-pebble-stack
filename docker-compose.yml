@@ -2,39 +2,39 @@ version: "3"
 services:
   traefik:
     build: traefik
-    image: traefik
     container_name: traefik
     networks:
       traefik:
-        ipv4_address: 172.16.0.10
+        ipv4_address: 172.16.0.250
     volumes:
-      - "./traefik/traefik.toml:/etc/traefik/traefik.toml:ro"
+      - "./traefik/traefik.yml:/etc/traefik/traefik.yml:ro"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./ca:/usr/local/share/ca-certificates:ro"
-    restart: always
+      - "./ca/:/usr/share/ca-certificates/pebble/:ro"
+    environment:
+      - SSL_CERT_FILE=/usr/share/ca-certificates/pebble/ca.crt
     ports:
       - 8080:8080
       - 80:80
       - 443:443
     labels:
-      traefik.port: 8080
-      traefik.frontend.rule: Host:traefik.test
-      traefik.frontend.priority: 1000
+      traefik.enable: true
+      traefik.http.routers.api.rule: Host(`traefik3.test`)
+      traefik.http.routers.api.priority: 1000
+      traefik.http.routers.api.service: api@internal
+    restart: always
     depends_on:
       - pebble
 
   pebble:
     build: pebble
-    image: pebble
     container_name: pebble
     volumes:
-        - "./ca:/var/pebble/certs/ca"
+      - "./ca:/var/pebble/certs/ca"
     networks:
-        traefik:
-          ipv4_address: 172.16.0.5
-    restart: always
-    labels:
-      traefik.enable: false
+      traefik:
+        ipv4_address: 172.16.0.251
+    ports:
+      - 443
 
 networks:
   traefik:

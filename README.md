@@ -1,15 +1,14 @@
-# Traefik-Pebble stack
+# Traefik 3.0 + Pebble local development stack
 
-*WARNING: This project is outdated*
+This project run 2 docker containers, traefik and pebble.
 
-This project run 2 docker containers, traefik and pebble. 
 Pebble is a really light implementation of Let's Encrypt ACME protocol.
-We're using zimosworld fork's which allow to keep the same CA between launches.
+We use the podCloud fork [@podcloud/pebble-static-CA](https://github.com/podcloud/pebble-static-CA) that support a static CA root file.
 
-Basically, you run this stack, and boum you have a local https development TLD
-with auto proxying and auto certificate generation 
+Basically, you run this stack, and boum you have a local https development TLD : `.test`
+With auto proxying and auto certificate generation with traefik and pebble
 
-# Installation
+## Installation
 
 ```shell
 mkdir -p $HOME/.docker/traefik
@@ -20,18 +19,28 @@ docker network create --subnet=172.16.0.0/16 traefik
 docker-compose up -d
 ```
 
-servers are set up to always restart, CA will generate only once, all other certificates are lost on restart
+- Servers are set up to always restart
+- CA will generate only once
+- All intermediates certificates are lost on restart
 
-# DNSmasq config
-```
+## DNSmasq config
+
+You can configure DNSmasq inside NetworkManager to resolve `.test` to the local traefik container.
+
+```dnsmasq.conf
 local=/test/
-address=/test/172.16.0.10 
+address=/test/172.16.0.250
 ```
 
-# Trusted CA
+then you can restart NetworkManager with `sudo systemctl restart NetworkManager`
 
-On most linux systems, you can add a trusted CA with this command : 
+** Note : On Windows you can use Technitium DNS Server. **
+
+## Trusted CA
+
+On most linux systems, you can add a trusted CA with this command :
+
 ```shell
 cd $HOME/.docker/traefik
-certutil -d sql:$HOME/.pki/nssdb -A -t "CT,C,C" -n "Traefik Pebble" -i ca/cert.pem
+certutil -d sql:$HOME/.pki/nssdb -A -t "CT,C,C" -n "Traefik Pebble" -i ca/ca.crt
 ```

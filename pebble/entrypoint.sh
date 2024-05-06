@@ -1,19 +1,21 @@
-#!/bin/sh
+#!/bin/bash
 
 cd /var/pebble/certs/
 
-if [ ! -f "ca/cert.pem" ]; then
-    openssl genrsa -out ca/key.pem 4096
-    openssl req -x509 -subj "/C=US/ST=CA/O=MyOrg, Inc./CN=pebble CA" -new -nodes -key ca/key.pem -sha256 -days 36500 -out ca/cert.pem
+if [ ! -f "ca/ca.crt" ]; then
+	openssl genrsa -out ca/ca.key 4096
+	openssl req -x509 -subj "/C=US/ST=CA/O=Pebble Static CA, Inc./CN=pebble static CA" -new -nodes -key ca/ca.key -sha256 -days 36500 -out ca/ca.crt
 fi
 
-if [ ! -f "localhost/cert.pem" ]; then
-    openssl genrsa -out localhost/key.pem 2048
-    openssl req -new -sha256 -key localhost/key.pem \
-        -subj "/C=US/ST=CA/O=MyOrg, Inc./CN=pebble" -out localhost/request.csr
-    openssl x509 -req -in localhost/request.csr \
-        -CA ca/cert.pem -CAkey ca/key.pem \
-        -CAcreateserial -out localhost/cert.pem -days 3650 -sha256
+if [ ! -f "server/server.crt" ]; then
+	openssl genrsa -out server/server.key 2048
+	openssl req -new -sha256 -key server/server.key \
+		-subj "/C=US/ST=CA/O=Pebble Static CA, Inc./CN=pebble" -out server/server.csr
+	openssl x509 -req -in server/server.csr \
+		-extfile <(printf "subjectAltName=DNS:pebble") \
+		-CA ca/ca.crt -CAkey ca/ca.key \
+		-CAcreateserial -out server/server.crt \
+		-days 3650 -sha256
 fi
 
 cd -
